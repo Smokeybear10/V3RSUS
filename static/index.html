@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRATOS | UFC AI Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <main class="container">
+        <header class="header">
+            <h1 class="logo">STRATOS <span class="badge">AI PRO</span></h1>
+            <p class="subtitle">Next-Generation MMA Predictive Analytics</p>
+        </header>
+
+        <section class="card glass-panel predictive-engine">
+            <div class="matchup-container">
+                <div class="fighter-panel red-corner">
+                    <label>Fighter 1 (Red Corner)</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="fighter1" placeholder="Search Fighter..." autocomplete="off">
+                        <ul class="autocomplete-list" id="autocomplete1"></ul>
+                    </div>
+                </div>
+
+                <div class="vs-badge">
+                    <span>VS</span>
+                </div>
+
+                <div class="fighter-panel blue-corner">
+                    <label>Fighter 2 (Blue Corner)</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="fighter2" placeholder="Search Fighter..." autocomplete="off">
+                        <ul class="autocomplete-list" id="autocomplete2"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button id="predict-btn" class="primary-btn">
+                    <span class="btn-text">Generate Prediction</span>
+                    <div class="loader hidden"></div>
+                </button>
+            </div>
+        </section>
+
+        <section id="result-section" class="card glass-panel result-section hidden">
+            <h2 class="result-title">Simulation Result</h2>
+            <div class="prediction-reveal">
+                <div class="winner-badge">
+                    <span id="winner-name">Khabib Nurmagomedov</span>
+                </div>
+                <div class="confidence-meter">
+                    <div class="meter-bar-bg">
+                        <div id="confidence-fill" class="meter-fill"></div>
+                    </div>
+                    <div class="metrics">
+                        <span>Win Probability</span>
+                        <span id="confidence-val" class="highlight">87.5%</span>
+                    </div>
+                </div>
+            </div>
+            <p class="analysis-text">Based on logistical regression analysis of career differential statistics across striking, grappling, and control dynamics.</p>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

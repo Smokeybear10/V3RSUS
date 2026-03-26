@@ -244,36 +244,74 @@ def make_fight_prediction(fighter1_data, fighter2_data, feature_columns, model):
     print("========================================================================")
     
 #======================================================================================================================
-
-def main():
-    filepath_ml_data = '/Users/thomasou/Github/MMA-Fight-Predictor/data/masterMLpublic.csv'
+def train_model():
+    filepath_ml_data = 'data/masterMLpublic.csv'
+    
+    # Try looking in 'data/masterMLpublic.csv' or fallback to 'data/data.csv' or others if we need
+    # Since we reorganized, earlier I saw the file named `Machine Learning Models Weights - Sheet1.csv`.
+    # Wait, in the README it said: `dataset taken from (https://... {masterMLpublic.csv})`. I'll try to load UFC/ufc-master.csv or data/data.csv.
+    # Actually wait. Let me just use the actual file path of the data that's in the repo right now.
+    import os
+    if os.path.exists('data/data.csv'):
+        filepath_ml_data = 'data/data.csv'
+    elif os.path.exists('../data/data.csv'):
+        filepath_ml_data = '../data/data.csv'
+    
+    print(f"Loading data from {filepath_ml_data}")
     full_data = load_data(filepath_ml_data)
     if full_data is None:
-        print("Data loading failed. Exiting program.")
-        return
+        print("Data loading failed. Cannot train model.")
+        return None, None
     
-    #PREPROCESS
+    # PREPROCESS
     print("Preprocessing data...")
     full_data_preprocessed = preprocess_data(full_data)
     if 'fighter' not in full_data_preprocessed.columns:
-        print("Error: 'fighter' column not found after preprocessing.")
+        print("Error: 'fighter' column not found after preprocessing. Aborting.")
+        return None, None
+    
     print("Data is clean. Proceeding with model training...")
     full_data_reduced = full_data_preprocessed[important_features + ['result']]
 
-    #SPLIT
+    # SPLIT
     train_data, test_data = train_test_split(full_data_reduced, test_size=0.10, random_state=42)
     X_train = train_data.drop(['result'], axis=1)
     Y_train = train_data['result']
 
     global global_feature_columns
     global_feature_columns = X_train.columns
-    print(len(global_feature_columns))
 
-    #TRAIN
+    # TRAIN
     model = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=42)
     model.fit(X_train, Y_train)
-    display_feature_importance(model, X_train.columns)
+    # display_feature_importance(model, X_train.columns)
+    
+    return model, full_data_preprocessed
 
+#======================================================================================================================
+def predict_matchup(fighter1_name, fighter2_name, model, preprocessed_data):
+    fighter1_name = fighter1_name.strip().lower()
+    fighter2_name = fighter2_name.strip().lower()
+    
+    fighter1_data = get_fighter_data(fighter1_name, preprocessed_data)
+    fighter2_data = get_fighter_data(fighter2_name, preprocessed_data)
+    
+    differential_data = fighter1_data - fighter2_data
+    fight_input = pd.DataFrame([differential_data], columns=global_feature_columns)
+    probability = model.predict_proba(fight_input)[0]
+    
+    predicted_winner = fighter1_name if probability[0] > 0.5 else fighter2_name
+    predicted_winner = predicted_winner.capitalize()
+    confidence = max(probability)
+    
+    return predicted_winner, confidence
+
+#======================================================================================================================
+def main():
+    model, preprocessed_data = train_model()
+    if model is None:
+        return
+    
     #INPUT PREDICTION
     while True:
         fighter1_name = input("Enter first fighter name: ").strip().lower()
@@ -282,10 +320,10 @@ def main():
         fighter2_name = input("Enter second fighter name: ").strip().lower()
         if fighter2_name == 'end':
             break
-    
-        fighter1_data = get_fighter_data(fighter1_name, full_data_preprocessed)
-        fighter2_data = get_fighter_data(fighter2_name, full_data_preprocessed)
-        make_fight_prediction(fighter1_data, fighter2_data, important_features, model)
+        
+        winner, conf = predict_matchup(fighter1_name, fighter2_name, model, preprocessed_data)
+        print(f"Predicted fight result: {winner} wins with {conf*100:.2f}% confidence")
+        print("========================================================================")
 
 if __name__ == '__main__':
     main()
