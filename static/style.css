@@ -1,5 +1,5 @@
 /* ============================================
-   STRATOS — UFC AI Predictor
+   V3RSUS — UFC Fight Predictor
    Structured following website-structure-guide.md
    ============================================ */
 
@@ -146,21 +146,24 @@ body::after {
     position: sticky;
     top: 0;
     z-index: 1000;
-    height: var(--nav-height);
+    min-height: var(--nav-height);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 2rem;
-    background: rgba(8, 10, 16, 0.5);
+    padding: 0.65rem 2rem;
+    background: rgba(8, 10, 16, 0.55);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .nav-brand {
     display: flex;
-    align-items: center;
-    gap: 0.6rem;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.12rem;
+    line-height: 1.1;
 }
 
 .nav-logo {
@@ -173,17 +176,12 @@ body::after {
     -webkit-text-fill-color: transparent;
 }
 
-.nav-badge {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.55rem;
-    font-weight: 700;
-    padding: 0.2rem 0.5rem;
-    background: rgba(59, 130, 246, 0.12);
-    border: 1px solid rgba(59, 130, 246, 0.25);
-    border-radius: 100px;
-    color: var(--blue-accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+.nav-byline {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
 }
 
 .nav-links {
@@ -224,10 +222,6 @@ body::after {
 .nav-link:hover::after,
 .nav-link.active::after {
     width: 100%;
-}
-
-.nav-link.external::after {
-    display: none;
 }
 
 /* ============================================
@@ -271,14 +265,6 @@ body::after {
     text-transform: uppercase;
     color: var(--text-muted);
     margin-top: 1rem;
-}
-
-.hero-byline {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    margin-top: 0.4rem;
-    letter-spacing: 0.04em;
 }
 
 .hero-stats {
@@ -415,10 +401,13 @@ body::after {
     grid-template-columns: 1fr auto 1fr;
     gap: 1.5rem;
     align-items: stretch;
+    position: relative;
+    z-index: 2;
 }
 
 .fighter-panel {
     position: relative;
+    z-index: 1;
     padding: 1.5rem;
     border-radius: var(--radius);
     border: 1px solid var(--border-subtle);
@@ -430,6 +419,7 @@ body::after {
 
 .fighter-panel:focus-within {
     transform: translateY(-3px);
+    z-index: 6;
 }
 
 .red-corner {
@@ -487,6 +477,7 @@ body::after {
 /* ---- Inputs ---- */
 .input-wrapper {
     position: relative;
+    z-index: 1;
     width: 100%;
 }
 
@@ -533,7 +524,7 @@ input[type="text"]:focus {
     border-radius: 10px;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 100;
+    z-index: 200;
     list-style: none;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(16px);
@@ -601,6 +592,8 @@ input[type="text"]:focus {
     margin-top: 2rem;
     display: flex;
     justify-content: center;
+    position: relative;
+    z-index: 1;
 }
 
 .primary-btn {
@@ -1042,7 +1035,7 @@ input[type="text"]:focus {
    ============================================ */
 @media (max-width: 768px) {
     .navbar {
-        padding: 0 1rem;
+        padding: 0.55rem 1rem;
     }
 
     .nav-links {

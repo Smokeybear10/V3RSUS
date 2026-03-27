@@ -54,29 +54,43 @@ document.addEventListener("DOMContentLoaded", () => {
     setupAutocomplete(f1Input, ac1);
     setupAutocomplete(f2Input, ac2);
 
-    // ---- Active nav link tracking ----
-    const navLinks = document.querySelectorAll('.nav-link[data-section]');
-    const sections = document.querySelectorAll('.hero, .section, .result-section');
+    const resultSec = document.getElementById("result-section");
+    const navHome = document.querySelector('.nav-link[data-section="home"]');
+    const navPredict = document.getElementById("nav-predict");
 
-    const navObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.id || entry.target.querySelector('[id]')?.id;
-                navLinks.forEach(link => {
-                    const match = link.getAttribute('data-section');
-                    if (match === id || (id === 'hero' && match === 'predict')) {
-                        link.classList.add('active');
-                    } else if (match === 'results' && id === 'result-section') {
-                        link.classList.add('active');
-                    } else {
-                        link.classList.remove('active');
-                    }
-                });
+    function updatePredictNavLabel() {
+        if (!navPredict || !resultSec) return;
+        navPredict.textContent = resultSec.classList.contains("hidden") ? "Predict" : "Results";
+    }
+
+    function updateNavActive() {
+        const predict = document.getElementById("predict");
+        if (!navHome || !navPredict || !predict) return;
+        const top = predict.getBoundingClientRect().top;
+        const marker = 120;
+        // Hero is ~full viewport tall, so "past hero" must use the predict block, not hero.bottom.
+        if (top <= marker) {
+            navHome.classList.remove("active");
+            navPredict.classList.add("active");
+        } else {
+            navHome.classList.add("active");
+            navPredict.classList.remove("active");
+        }
+    }
+
+    if (navPredict && resultSec) {
+        navPredict.addEventListener("click", (e) => {
+            if (!resultSec.classList.contains("hidden")) {
+                e.preventDefault();
+                resultSec.scrollIntoView({ behavior: "smooth", block: "start" });
             }
         });
-    }, { threshold: 0.3 });
+    }
 
-    sections.forEach(sec => navObserver.observe(sec));
+    window.addEventListener("scroll", updateNavActive, { passive: true });
+    window.addEventListener("resize", updateNavActive, { passive: true });
+    updateNavActive();
+    updatePredictNavLabel();
 
     // ---- Scroll reveal ----
     const revealObserver = new IntersectionObserver((entries) => {
@@ -93,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const matchBtn = document.getElementById("predict-btn");
     const btnText = document.querySelector(".btn-text");
     const loader = document.querySelector(".loader");
-    const resultSec = document.getElementById("result-section");
 
     matchBtn.addEventListener("click", () => {
         const fighter1 = f1Input.value.trim();
@@ -105,6 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         resultSec.classList.add("hidden");
+        updatePredictNavLabel();
         btnText.classList.add("hidden");
         loader.classList.remove("hidden");
         matchBtn.disabled = true;
@@ -161,10 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
         arrowL.classList.toggle("active", winner === fighter1);
         arrowR.classList.toggle("active", winner === fighter2);
 
-        // Activate results nav link
-        const navResults = document.getElementById("nav-results");
-        if (navResults) navResults.classList.add("active");
-
         // Fighter profiles
         renderProfile("f1", fighter1, f1);
         renderProfile("f2", fighter2, f2);
@@ -184,6 +194,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 80);
 
         resultSec.scrollIntoView({ behavior: "smooth", block: "start" });
+        updatePredictNavLabel();
+        requestAnimationFrame(() => {
+            updateNavActive();
+            setTimeout(updateNavActive, 400);
+        });
     }
 
     function renderProfile(prefix, name, stats) {
